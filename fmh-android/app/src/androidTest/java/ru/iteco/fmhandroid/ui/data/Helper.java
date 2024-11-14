@@ -1,87 +1,47 @@
 package ru.iteco.fmhandroid.ui.data;
 
 import static androidx.test.espresso.Espresso.onView;
-import static androidx.test.espresso.action.ViewActions.click;
-import static androidx.test.espresso.action.ViewActions.closeSoftKeyboard;
-import static androidx.test.espresso.action.ViewActions.replaceText;
-import static androidx.test.espresso.action.ViewActions.scrollTo;
-import static androidx.test.espresso.action.ViewActions.swipeDown;
-import static androidx.test.espresso.action.ViewActions.swipeLeft;
-import static androidx.test.espresso.action.ViewActions.swipeRight;
-import static androidx.test.espresso.action.ViewActions.swipeUp;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
-import static androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition;
-import static androidx.test.espresso.contrib.RecyclerViewActions.scrollToPosition;
 import static androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom;
+import static androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
-import static androidx.test.espresso.matcher.ViewMatchers.withChild;
-import static androidx.test.espresso.matcher.ViewMatchers.withClassName;
+import static androidx.test.espresso.matcher.ViewMatchers.isRoot;
+import static androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
-import static androidx.test.espresso.matcher.ViewMatchers.withParent;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
-import static androidx.test.platform.app.InstrumentationRegistry.getInstrumentation;
 import static org.hamcrest.Matchers.allOf;
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
-import static ru.iteco.fmhandroid.ui.step.MainScreenStep.enterCreateClaimsActionButton;
-import static ru.iteco.fmhandroid.ui.step.MainScreenStep.enterCreateClaimsAllClaims;
-import static ru.iteco.fmhandroid.ui.step.MainScreenStep.enterCreateClaimsButtonPlus;
-import static ru.iteco.fmhandroid.ui.step.MainScreenStep.enterCreateNews1;
-import static ru.iteco.fmhandroid.ui.step.MainScreenStep.enterCreateNews2;
 
-import android.app.Instrumentation;
-import android.os.SystemClock;
-import android.view.MotionEvent;
+import android.os.IBinder;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
-import android.widget.DatePicker;
+import android.view.WindowManager;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
+import androidx.core.widget.NestedScrollView;
 import androidx.test.espresso.NoMatchingViewException;
 import androidx.test.espresso.PerformException;
+import androidx.test.espresso.Root;
 import androidx.test.espresso.UiController;
 import androidx.test.espresso.ViewAction;
 import androidx.test.espresso.ViewInteraction;
-import androidx.test.espresso.action.GeneralLocation;
-import androidx.test.espresso.action.GeneralSwipeAction;
-import androidx.test.espresso.action.Press;
-import androidx.test.espresso.action.Swipe;
-import androidx.test.espresso.contrib.PickerActions;
+import androidx.test.espresso.matcher.ViewMatchers;
+import androidx.test.espresso.util.HumanReadables;
+import androidx.test.espresso.util.TreeIterables;
 
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
-import org.hamcrest.Matchers;
 import org.hamcrest.TypeSafeMatcher;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.Date;
-import java.util.Locale;
-import java.util.Random;
-import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.TimeoutException;
 
-import io.bloco.faker.Faker;
-import ru.iteco.fmhandroid.R;
-import ru.iteco.fmhandroid.ui.screenElements.CalendarScreenElements;
-import ru.iteco.fmhandroid.ui.screenElements.ClaimsScreenElements;
-import ru.iteco.fmhandroid.ui.screenElements.ControlPanelScreenElements;
-import ru.iteco.fmhandroid.ui.screenElements.CreatingClaimsScreenElements;
-import ru.iteco.fmhandroid.ui.screenElements.CreatingNewsScreenElements;
-import ru.iteco.fmhandroid.ui.screenElements.EditingNewsScreenElements;
-import ru.iteco.fmhandroid.ui.screenElements.FilteringWindowScreenElements;
-import ru.iteco.fmhandroid.ui.screenElements.MainScreenElements;
-import ru.iteco.fmhandroid.ui.screenElements.WatchScreenElements;
-import ru.iteco.fmhandroid.ui.step.ControlPanelScreenStep;
-import ru.iteco.fmhandroid.ui.step.MainScreenStep;
-import ru.iteco.fmhandroid.ui.step.NewsScreenStep;
 
-public class Helper {
 
-    private Helper() {
+public class dataHelper {
+
+    public dataHelper() {
     }
 
     public static class AuthInfo {
@@ -97,666 +57,92 @@ public class Helper {
             return login;
         }
 
-        public String getPassword() {
+        public String getPass() {
             return password;
         }
-    }
 
-    public static AuthInfo authInfo() {
-        String login = "login2";
-        String password = "password2";
-        return new AuthInfo(login, password);
-    }
+        public static AuthInfo validAuth() {
+            String login = "login2";
+            String pass = "password2";
+            return new AuthInfo(login, pass);
+        }
 
-    public static AuthInfo invalidAuthInfo() {
-        Faker faker = new Faker();
-        Random random = new Random();
-        String[] invalidLogin = {"login1", "", " ", faker.name.firstName() + "@" + faker.name.lastName()};
-        String[] emptyString = {"", " "};
-        String[] invalidPassword = {" ", ""};
-        String randomEmptyString = emptyString[random.nextInt(emptyString.length)];
-        String randomPassword = invalidPassword[random.nextInt(invalidPassword.length)];
-        String randomLogin = invalidLogin[random.nextInt(invalidLogin.length)];
-        String login = (randomLogin.equals("login1") ? randomEmptyString : invalidLogin[0]);
-        String password = (randomPassword.equals("") ? randomEmptyString : invalidPassword[0]);
-        return new AuthInfo(login, password);
-    }
+        public static AuthInfo emptyLogin() {
+            String login = "";
+            String pass = "password2";
+            return new AuthInfo(login, pass);
+        }
 
-    public static AuthInfo invalidLoginPasswordAuthInfo() {
-        Faker faker = new Faker();
-        Random random = new Random();
-        String[] login = {"login", "login2", "///////", "./..", faker.name.firstName(), faker.name.lastName()};
-        String[] password = {"pass", "password", "@@@@@@", "121587"};
-        String invalidLogin = login[random.nextInt(login.length)];
-        String invalidPassword = password[random.nextInt(password.length)];
-        return new AuthInfo(invalidLogin, invalidPassword);
-    }
+        public static AuthInfo emptyPassword() {
+            String login = "login2";
+            String pass = "";
+            return new AuthInfo(login, pass);
+        }
 
-    public static void clickingNextMonth(int quantity) {
-        CalendarScreenElements calendarScreenElements = new CalendarScreenElements();
-        for (int i = 0; i < quantity; i++) {
-            calendarScreenElements.getNextMonthButton().perform(scrollTo(), click());
+        public static AuthInfo wrongLogin() {
+            String login = "90";
+            String pass = "password2";
+            return new AuthInfo(login, pass);
+        }
+
+        public static AuthInfo wrongPassword() {
+            String login = "login2";
+            String pass = "90";
+            return new AuthInfo(login, pass);
         }
     }
 
-    public static void swipeNextMonth(int quantity) {
-        CalendarScreenElements calendarScreenElements = new CalendarScreenElements();
-        for (int i = 0; i < quantity; i++) {
-            calendarScreenElements.getCalendarMonthView().perform(swipeRight());
-
-        }
+    public static ViewInteraction emptyToast(int id) {
+        return onView(withText(id)).inRoot(new ToastMatcher());
     }
 
-    public static void swipePreviousMonth(int quantity) {
-        CalendarScreenElements calendarScreenElements = new CalendarScreenElements();
-        for (int i = 0; i < quantity; i++) {
-            calendarScreenElements.getCalendarMonthView().perform(swipeLeft());
-        }
-    }
-
-    public static void clickingPreviousMonth(int quantity) {
-        CalendarScreenElements calendarScreenElements = new CalendarScreenElements();
-        for (int i = 0; i < quantity; i++) {
-            calendarScreenElements.getPreviousMonthButton().perform(scrollTo(), click());
-        }
-    }
-
-    public static void createClaims(int quantity) {
-        for (int i = 0; i < quantity; i++) {
-            createClaim();
-        }
-    }
-
-    public static void createClaim() {
-        WatchScreenElements watchScreenElements = new WatchScreenElements();
-        CalendarScreenElements calendarScreenElements = new CalendarScreenElements();
-        CreatingClaimsScreenElements creatingClaimsScreenElements = new CreatingClaimsScreenElements();
-        MainScreenElements mainScreenElements = new MainScreenElements();
-
-        SystemClock.sleep(2000);
-        mainScreenElements.getCreateClaimsButton().perform(click());
-        String titleText = Text.textSymbol(5);
-
-        creatingClaimsScreenElements.getTitleClaimField().perform(replaceText(titleText), closeSoftKeyboard());
-        SystemClock.sleep(2000);
-        creatingClaimsScreenElements.getDateClaimField().perform(click());
-        watchScreenElements.getOkButton().perform(scrollTo(), click());
-        SystemClock.sleep(2000);
-        creatingClaimsScreenElements.getTimeClaimField().perform(click());
-        calendarScreenElements.getOkButton().perform(scrollTo(), click());
-        SystemClock.sleep(2000);
-        creatingClaimsScreenElements.getDescriptionClaimField().perform(replaceText(Text.textSymbol(10)), closeSoftKeyboard());
-        SystemClock.sleep(2000);
-        creatingClaimsScreenElements.getSaveButton().perform(click());
-        SystemClock.sleep(2000);
-    }
-
-    public static void createNewsForCategory(String text, String category) {
-        ControlPanelScreenElements controlPanelScreenElements = new ControlPanelScreenElements();
-        CreatingNewsScreenElements creatingNewsScreenElements = new CreatingNewsScreenElements();
-        WatchScreenElements watchScreenElements = new WatchScreenElements();
-        CalendarScreenElements calendarScreenElements = new CalendarScreenElements();
-
-        controlPanelScreenElements.getCreateNewsButton().perform(click());
-
-        creatingNewsScreenElements.getCategoryFieldNews().perform(replaceText(category)).perform(closeSoftKeyboard());
-        SystemClock.sleep(3000);
-        creatingNewsScreenElements.getTitleFieldNews().perform(replaceText(category)).perform(closeSoftKeyboard());
-        creatingNewsScreenElements.getPublicationDateFieldNews().perform(click());
-        watchScreenElements.getOkButton().perform(scrollTo(), click());
-        SystemClock.sleep(3000);
-        creatingNewsScreenElements.getTimeFieldNews().perform(click());
-        calendarScreenElements.getOkButton().perform(scrollTo(), click());
-        SystemClock.sleep(3000);
-        creatingNewsScreenElements.getDescriptionFieldNews().perform(replaceText(text)).perform(closeSoftKeyboard());
-        SystemClock.sleep(3000);
-        creatingNewsScreenElements.getSaveButton().perform(click());
-        SystemClock.sleep(2000);
-    }
-
-    public static void createNews(String text, String category) {
-        ControlPanelScreenElements controlPanelScreenElements = new ControlPanelScreenElements();
-        CreatingNewsScreenElements creatingNewsScreenElements = new CreatingNewsScreenElements();
-        WatchScreenElements watchScreenElements = new WatchScreenElements();
-        CalendarScreenElements calendarScreenElements = new CalendarScreenElements();
-
-        controlPanelScreenElements.getCreateNewsButton().perform(click());
-
-        creatingNewsScreenElements.getCategoryFieldNews().perform(replaceText(category)).perform(closeSoftKeyboard());
-        SystemClock.sleep(3000);
-        creatingNewsScreenElements.getTitleFieldNews().perform(replaceText(text), click()).perform(closeSoftKeyboard());
-        creatingNewsScreenElements.getPublicationDateFieldNews().perform(click());
-        watchScreenElements.getOkButton().perform(scrollTo(), click());
-        SystemClock.sleep(3000);
-        creatingNewsScreenElements.getTimeFieldNews().perform(click());
-        calendarScreenElements.getOkButton().perform(scrollTo(), click());
-        creatingNewsScreenElements.getDescriptionFieldNews().perform(replaceText(text)).perform(closeSoftKeyboard());
-        SystemClock.sleep(3000);
-        creatingNewsScreenElements.getSaveButton().perform(click());
-        SystemClock.sleep(2000);
-    }
-
-    public static void deletingNewsUpToTheNumberOfTenControlPanelScreen(int position) {
-        MainScreenStep mainScreenStep = new MainScreenStep();
-        NewsScreenStep newsScreenStep = new NewsScreenStep();
-        ControlPanelScreenStep controlPanelScreenStep = new ControlPanelScreenStep();
-
-        mainScreenStep.clickingOnTheActionMenuButton();
-        mainScreenStep.clickingOnTheNewsName();
-        newsScreenStep.clickingOnTheButtonToGoToTheControlPanel();
-
-        int positionNews = position;
-
-        while (true) {
-            try {
-                controlPanelScreenStep.clickingOnRandomlySelectedNewsItem(positionNews);
-                String description = controlPanelScreenStep.descriptionNews();
-                controlPanelScreenStep.clickingOnTheDeleteNewsButtonPosition(description);
-                SystemClock.sleep(2000);
-                controlPanelScreenStep.clickingOnTheConfirmationButtonToDeleteTheNews();
-                SystemClock.sleep(2000);
-            } catch (RuntimeException exception) {
-                break;
-            }
-            positionNews += 1;
-        }
-    }
-
-    public static class Rand {
-
-        private static final Random rand = new Random();
-
-        @SafeVarargs
-        public static int randomClaims(@NonNull int... items) {
-            return items[rand.nextInt(items.length)];
-        }
-
-        @SafeVarargs
-        public static int randomNews(@NonNull int... items) {
-            return items[rand.nextInt(items.length)];
-        }
-
-        @SafeVarargs
-        public static int random(@NonNull int... items) {
-            return items[rand.nextInt(items.length)];
-        }
-
-        public static String randomExecutor() {
-            String[] executor = {
-                    "Смирнов Петр Петрович",
-                    "Иванов Данил Данилович",
-                    "Петров Егор Егорович",
-                    "Сидоров Дмитрий Дмитреевич",
-                    "Тестов Тест Тестович",
-                    "Netology Diplom QAMID",
-            };
-            return executor[rand.nextInt(executor.length)];
-        }
-
-        public static String randomCategory() {
-            String[] category = {
-                    "Объявление",
-                    "День рождения",
-                    "Зарплата",
-                    "Профсоюз",
-                    "Праздник",
-                    "Массаж",
-                    "Благодарность",
-                    "Нужна помощь"
-            };
-            return category[rand.nextInt(category.length)];
-        }
-
-        public static int randomDay() {
-            int day;
-            int localDateDay = LocalDate.now().getDayOfMonth();
-            int min = 1;
-            int max = 30;
-            max -= min;
-            int randomDay = (int) ((Math.random() * ++max) + min);
-            if (randomDay < localDateDay || randomDay + localDateDay > 28) {
-                day = 0;
-            } else {
-                day = randomDay;
-            }
-            return day;
-        }
-
-        public static int randomMonth() {
-            int min = 1;
-            int max = 12;
-            max -= min;
-            return (int) ((Math.random() * ++max) + min);
-        }
-
-        public static void randomCheckBox() {
-            FilteringWindowScreenElements filteringWindowScreenElements = new FilteringWindowScreenElements();
-
-            int min = 0;
-            int max = 3;
-            max -= min;
-            int random = (int) ((Math.random() * ++max) + min);
-
-            if (random == 0) {
-                filteringWindowScreenElements.getCheckBoxOpen().perform(click());
-            } else if (random == 1) {
-                filteringWindowScreenElements.getCheckBoxInProgress().perform(click());
-            } else if (random == 2) {
-                filteringWindowScreenElements.getCheckBoxExecuted().perform(click());
-            } else {
-                filteringWindowScreenElements.getCheckBoxCancelled().perform(click());
-            }
-            SystemClock.sleep(2000);
-        }
-
-        public static void randomLogInToClaimsCreation() {
-            int min = 1;
-            int max = 3;
-            max -= min;
-            int random = (int) ((Math.random() * ++max) + min);
-
-            if (random == 1) {
-                enterCreateClaimsAllClaims();
-            } else if (random == 2) {
-                enterCreateClaimsActionButton();
-            } else {
-                enterCreateClaimsButtonPlus();
-            }
-            SystemClock.sleep(2000);
-        }
-
-        public static void randomLogInToNewsCreation() {
-            int min = 1;
-            int max = 2;
-            max -= min;
-            int random = (int) ((Math.random() * ++max) + min);
-
-            if (random == 1) {
-                enterCreateNews1();
-            } else {
-                enterCreateNews2();
-            }
-            SystemClock.sleep(2000);
-        }
-    }
-
-    public static class Swipes {
-
-        static void swiper(int start, int end, int delay) {
-            long downTime = SystemClock.uptimeMillis();
-            long eventTime = SystemClock.uptimeMillis();
-            Instrumentation inst = getInstrumentation();
-
-            MotionEvent event = MotionEvent.obtain(downTime, eventTime, MotionEvent.ACTION_DOWN, 500, start, 0);
-            inst.sendPointerSync(event);
-            eventTime = SystemClock.uptimeMillis() + delay;
-            event = MotionEvent.obtain(downTime, eventTime, MotionEvent.ACTION_MOVE, 500, end, 0);
-            inst.sendPointerSync(event);
-            event = MotionEvent.obtain(downTime, eventTime, MotionEvent.ACTION_UP, 500, end, 0);
-            inst.sendPointerSync(event);
-            SystemClock.sleep(2000); //The wait is important to scroll
-        }
-        // This swipes all the way to the bottom of the screen
-        public static void swipeToBottom(){
-            swiper(1000, 100, 0);
-        }
-
-        // This scrolls down one page at a time
-        public static void scrollSlowlyDown(){
-            swiper(775, 100, 100);
-        }
-
-        // This swipes to the top
-        public static void swipeToTop(){
-            swiper(100, 1000, 0);
-        }
-
-        // This scrolls up one page at a time
-        public static void scrollSlowlyUp(){
-            swiper(100, 775, 100);
-        }
-
-    }
-
-    public static ViewAction swipeUpSlow() {
-        return new GeneralSwipeAction(Swipe.SLOW, GeneralLocation.BOTTOM_CENTER,
-                GeneralLocation.TOP_CENTER, Press.FINGER);
-    }
-
-
-    public static void setUpStatusNewsNotActive(int position) {
-        ControlPanelScreenElements controlPanelScreenElements = new ControlPanelScreenElements();
-        EditingNewsScreenElements editingNewsScreenElements = new EditingNewsScreenElements();
-
-        controlPanelScreenElements.getRecyclerView().perform(actionOnItemAtPosition(position, click()));
-        SystemClock.sleep(3000);
-        String nameNewsItWas = Text.getText(controlPanelScreenElements.getNewsItemTitle());
-        String statusBefore = Text.getText(onView(allOf(withId(R.id.news_item_published_text_view), withParent(withParent(allOf(withId(R.id.news_item_material_card_view), withChild(withChild(withText(nameNewsItWas)))))))));
-        onView(allOf(withId(R.id.edit_news_item_image_view), withParent(withParent(allOf(withId(R.id.news_item_material_card_view), withChild(withChild(withText(nameNewsItWas)))))))).perform(click());
-        SystemClock.sleep(3000);
-        if (statusBefore.toUpperCase().trim().equals("ACTIVE")) {
-            editingNewsScreenElements.getCheckBox().perform(click());
-            editingNewsScreenElements.getSaveButton().perform(click());
+    public static View checkMessage(int id, boolean visible) {
+        if (visible) {
+            emptyToast(id).check(matches(isDisplayed()));
         } else {
-            editingNewsScreenElements.getCancelButton().perform(click());
-            editingNewsScreenElements.getOkButton().perform(scrollTo(), click());
+            emptyToast(id).check(matches(not(isDisplayed())));
         }
-        SystemClock.sleep(2000);
+        return null;
     }
 
-    public static void checkStatus(String statusClaims) {
-        ClaimsScreenElements claimsScreenElements = new ClaimsScreenElements();
-        String[] status = {"Open", "In progress", "Executed", "Cancelled"};
+    public static class ToastMatcher extends TypeSafeMatcher<Root> {
 
-        if (statusClaims.equals("Open")) {
-            claimsScreenElements.getStatus().check(matches(withText(status[0])));
-        } else {
-            claimsScreenElements.getStatus().check(matches(not(withText(status[0]))));
+        @Override
+        public void describeTo(Description description) {
+            description.appendText("is toast");
         }
-        if (statusClaims.equals("In progress")) {
-            claimsScreenElements.getStatus().check(matches(withText(status[1])));
-        } else {
-            claimsScreenElements.getStatus().check(matches(not(withText(status[1]))));
-        }
-        if (statusClaims.equals("Executed")) {
-            claimsScreenElements.getStatus().check(matches(withText(status[2])));
-        } else {
-            claimsScreenElements.getStatus().check(matches(not(withText(status[2]))));
-        }
-        if (statusClaims.equals("Cancelled")) {
-            claimsScreenElements.getStatus().check(matches(withText(status[3])));
-        } else {
-            claimsScreenElements.getStatus().check(matches(not(withText(status[3]))));
-        }
-        SystemClock.sleep(2000);
-    }
 
-    public static class Search {
-
-        public static int searchNews(String text) {
-            ControlPanelScreenStep controlPanelScreenStep = new ControlPanelScreenStep();
-            ControlPanelScreenElements controlPanelScreenElements = new ControlPanelScreenElements();
-            int position = 0;
-            boolean notFound = true;
-            String description;
-
-            while (notFound) {
-                try {
-                    controlPanelScreenStep.clickingOnRandomlySelectedNewsItem(position);
-//                    controlPanelScreenElements.getRecyclerView().perform(scrollToPosition(position), click());
-                    SystemClock.sleep(2000);
-                    description = controlPanelScreenStep.descriptionNewsPosition(position);
-                    if (text.trim().equals(description.trim())) {
-                        notFound = false;
-                    } else {
-                        notFound = true;
-//                        controlPanelScreenStep.clickingOnRandomlySelectedNewsItem(position);
-                        position += 1;
-//                        controlPanelScreenElements.getRecyclerView().perform(scrollToPosition(position), click());
-                        SystemClock.sleep(2000);
-                    }
-                } catch (PerformException e) {
-                    break;
+        @Override
+        public boolean matchesSafely(Root root) {
+            int type = root.getWindowLayoutParams().get().type;
+            if (type == WindowManager.LayoutParams.TYPE_TOAST) {
+                IBinder windowToken = root.getDecorView().getWindowToken();
+                IBinder appToken = root.getDecorView().getApplicationWindowToken();
+                if (windowToken == appToken) {
+                    return true;
                 }
             }
-            return position;
-        }
-
-        public static int searchComment(String text) {
-            ClaimsScreenElements claimsScreenElements = new ClaimsScreenElements();
-            int position = 0;
-            boolean notFound = true;
-
-            while (notFound) {
-                try {
-                    onView(withText(text)).check(matches(isDisplayed()));
-                    notFound = false;
-                } catch (PerformException e) {
-                    break;
-                }
-                claimsScreenElements.getBlockComment().check(matches(isDisplayed())).perform(actionOnItemAtPosition(position, swipeDown()));
-                position += 1;
-            }
-            return position;
-        }
-
-        public static String searchForAnUncreatedComment(String text) {
-            ClaimsScreenElements claimsScreenElements = new ClaimsScreenElements();
-
-            boolean notFound = true;
-            int position = 0;
-            String commentTextString = Text.getText(onView(allOf(withId(R.id.comment_description_text_view),
-                    withParent(withParent(withIndex(withId(R.id.claim_comments_list_recycler_view), position))))));
-            while (notFound) {
-                try {
-                    onView(withText(text)).check(matches(isDisplayed()));
-                    notFound = false;
-                } catch (NoMatchingViewException ignore) {
-                }
-                try {
-                    claimsScreenElements.getBlockComment().check(matches(isDisplayed())).perform(actionOnItemAtPosition(position, swipeUp()));
-                    position += 1;
-                } catch (PerformException e) {
-                    break;
-                }
-            }
-            return commentTextString;
-        }
-
-        public static void textSearchClaims(String text) {
-            ClaimsScreenElements claimsScreenElements = new ClaimsScreenElements();
-
-            boolean notFound = true;
-            int position = 0;
-            while (notFound) {
-                try {
-                    onView(withText(text)).check(matches(isDisplayed()));
-                    notFound = false;
-                } catch (NoMatchingViewException ignored) {
-
-                }
-                claimsScreenElements.getBlockClaims().check(matches(isDisplayed())).perform(actionOnItemAtPosition(position, swipeUp()));
-                position += 1;
-            }
-//            SystemClock.sleep(3000);
-            claimsScreenElements.getBlockClaims().check(matches(isDisplayed())).perform(actionOnItemAtPosition(position - 1, click()));
-        }
-
-        public static String searchForAnUncreatedClaim(String text) {
-            ClaimsScreenElements claimsScreenElements = new ClaimsScreenElements();
-
-            boolean notFound = true;
-            int position = 0;
-
-            String commentTextString = Text.getText(onView(allOf(withId(R.id.description_material_text_view),
-                    withParent(withParent(withIndex(withId(R.id.claim_list_card), position))))));
-            while (notFound) {
-                try {
-                    onView(withText(text)).check(matches(isDisplayed()));
-                    notFound = false;
-                } catch (NoMatchingViewException ignore) {
-                }
-                try {
-                    claimsScreenElements.getBlockClaims().check(matches(isDisplayed())).perform(actionOnItemAtPosition(position, swipeUp()));
-                    position += 1;
-                } catch (PerformException e) {
-                    break;
-                }
-            }
-            return commentTextString;
+            return false;
         }
     }
 
-    public static class DateTime {
-        public static ViewInteraction headerCalendarDate(String dayOfWeek, String month, String day) {
-            return onView(allOf(withClassName(is("com.google.android.material.textview.MaterialTextView")), withText(dayOfWeek + ", " + month + " " + day),
-                    childAtPosition(
-                            withClassName(is("android.widget.LinearLayout")), childAtPosition(
-                                    withClassName(is("android.widget.LinearLayout")), withClassName(is("android.widget.LinearLayout")),
-                                    0),
-                            1)));
-        }
+    public static Matcher<View> childAtPosition(
+            final Matcher<View> parentMatcher, final int position) {
 
-        public static ViewInteraction headerCalendarYear(String year) {
-            return onView(allOf(withClassName(is("com.google.android.material.textview.MaterialTextView")), withText(year),
-                    childAtPosition(
-                            withClassName(is("android.widget.LinearLayout")), childAtPosition(
-                                    withClassName(is("android.widget.LinearLayout")), withClassName(is("android.widget.LinearLayout")),
-                                    0),
-                            0)));
-        }
-
-        public static void settingTheDate(int year, int month, int day) {
-            onView(withClassName(Matchers.equalTo(DatePicker.class.getName()))).perform(PickerActions.setDate(year, month, day)).perform(click());
-        }
-
-        public static Date dateFormat(String date) throws ParseException {
-            final SimpleDateFormat format = new SimpleDateFormat(
-                    "dd.MM.yyyy", Locale.US);
-            format.setLenient(false);
-            return format.parse(date);
-        }
-
-        public static String localDate() {
-            return LocalDate.now().format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
-        }
-
-        public static String invalidGeneratorDate() {
-            LocalDate startDate = LocalDate.now().plusYears(3);
-            long start = startDate.getDayOfMonth();
-            LocalDate endDate = LocalDate.now().plusYears(3);
-            long end = endDate.lengthOfYear();
-            long randomEpochDay = ThreadLocalRandom.current().longs(start, end).findAny().getAsLong();
-            return startDate.plusDays(randomEpochDay).format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
-        }
-
-        public static String generatorDate() {
-            LocalDate startDate = LocalDate.now().plusDays(3);
-            long start = startDate.getDayOfMonth();
-            LocalDate endDate = LocalDate.now().plusYears(1);
-            long end = endDate.lengthOfYear();
-            long randomEpochDay = ThreadLocalRandom.current().longs(start, end).findAny().getAsLong();
-            return startDate.plusDays(randomEpochDay).format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
-        }
-
-        public static String generatorDate2() {
-            LocalDate startDate = LocalDate.now().minusYears(1);
-            long start = startDate.getDayOfMonth();
-            LocalDate endDate = LocalDate.now().plusDays(3);
-            long end = endDate.lengthOfYear();
-            long randomEpochDay = ThreadLocalRandom.current().longs(start, end).findAny().getAsLong();
-            return startDate.plusDays(randomEpochDay).format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
-        }
-
-        public static String randomHour23() {
-            String hour;
-            int min = 0;
-            int max = 9;
-            max -= min;
-            int random = (int) ((Math.random() * ++max) + min);
-            if (random < 10) {
-                hour = "0" + random;
-            } else {
-                hour = String.valueOf(random);
+        return new TypeSafeMatcher<View>() {
+            @Override
+            public void describeTo(Description description) {
+                description.appendText("Child at position " + position + " in parent ");
+                parentMatcher.describeTo(description);
             }
-            return hour;
-        }
 
-        public static String randomMinute59() {
-            String minute;
-            int min = 0;
-            int max = 59;
-            max -= min;
-            int random = (int) ((Math.random() * ++max) + min);
-            if (random < 10) {
-                minute = "0" + random;
-            } else {
-                minute = String.valueOf(random);
+            @Override
+            public boolean matchesSafely(View view) {
+                ViewParent parent = view.getParent();
+                return parent instanceof ViewGroup && parentMatcher.matches(parent)
+                        && view.equals(((ViewGroup) parent).getChildAt(position));
             }
-            return minute;
-        }
-
-        public static String invalidHour() {
-            int min = 24;
-            int max = 99;
-            max -= min;
-            int random = (int) ((Math.random() * ++max) + min);
-            return String.valueOf(random);
-        }
-
-        public static String invalidMinute() {
-            String minute;
-            int min = 0;
-            int max = 99;
-            max -= min;
-            int random = (int) ((Math.random() * ++max) + min);
-            if (random < 10) {
-                minute = "0" + random;
-            } else {
-                minute = String.valueOf(random);
-            }
-            return minute;
-        }
-    }
-
-    public static class Text {
-
-        public static String text() {
-            Faker faker = new Faker();
-            return faker.name.lastName();
-        }
-
-        public static String firstUpperCase(String text) {
-            if (text == null || text.isEmpty())
-                return "";
-            return text.substring(0, 1).toUpperCase() + text.substring(1);
-        }
-
-        public static String textSymbol(int numberOfLetters) {
-            Random random = new Random();
-            String randomText;
-            String[] texts = {
-                    " ", "", "1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "q", "w", "e", "r", "t", "y", "u", "i", "o", "p",
-                    "a", "s", "d", "f", "g", "h", "j", "k", "l", "z", "x", "c", "v", "b", "n", "m", "!", "@", "#", "$", "%", "^", "&",
-                    "*", "(", ")", "_", "+"
-            };
-            randomText = texts[random.nextInt(texts.length)];
-            for (int i = 1; i < numberOfLetters; i++) {
-                randomText = randomText.concat(texts[random.nextInt(texts.length)]);
-            }
-            return randomText;
-        }
-
-        public static String text51Symbol() {
-            return "qwertyuiop[]asdfghjkl;'zxcvbnm,./1234567890-=+_)(*&";
-        }
-
-
-        public static String getText(ViewInteraction matcher) {
-            final String[] text = new String[1];
-            ViewAction viewAction = new ViewAction() {
-
-                @Override
-                public Matcher<View> getConstraints() {
-                    return isAssignableFrom(TextView.class);
-                }
-
-                @Override
-                public String getDescription() {
-                    return "Text of the view";
-                }
-
-                @Override
-                public void perform(UiController uiController, View view) {
-                    TextView textView = (TextView) view;
-                    text[0] = textView.getText().toString();
-                }
-            };
-
-            matcher.perform(viewAction);
-
-            return text[0];
-        }
+        };
     }
 
     public static Matcher<View> childAtPosition(Matcher<View> matcher, final Matcher<View> parentMatcher, final int position) {
@@ -791,6 +177,198 @@ public class Helper {
             @Override
             public boolean matchesSafely(View view) {
                 return matcher.matches(view) && currentIndex++ == index;
+            }
+        };
+    }
+
+    private static View findFirstParentLayoutOfClass(View view) {
+        ViewParent parent = new FrameLayout(view.getContext());
+        ViewParent incrementView = null;
+        int i = 0;
+        while (parent != null && !(parent.getClass() == NestedScrollView.class)) {
+            if (i == 0) {
+                parent = findParent(view);
+            } else {
+                parent = findParent(incrementView);
+            }
+            incrementView = parent;
+            i++;
+        }
+        return (View) parent;
+    }
+
+    private static ViewParent findParent(View view) {
+        return view.getParent();
+    }
+
+    private static ViewParent findParent(ViewParent view) {
+        return view.getParent();
+    }
+
+    public static class Text {
+
+        public static String getText(ViewInteraction matcher) {
+            final String[] text = new String[1];
+            ViewAction viewAction = new ViewAction() {
+
+                @Override
+                public Matcher<View> getConstraints() {
+                    return isAssignableFrom(TextView.class);
+                }
+
+                @Override
+                public String getDescription() {
+                    return "Text of the view";
+                }
+
+                @Override
+                public void perform(UiController uiController, View view) {
+                    TextView textView = (TextView) view;
+                    text[0] = textView.getText().toString();
+                }
+            };
+            matcher.perform(viewAction);
+
+            return text[0];
+        }
+    }
+
+    public static ViewAction waitId(final int viewId, final long millis) {
+        return new ViewAction() {
+            @Override
+            public Matcher<View> getConstraints() {
+                return isRoot();
+            }
+
+            @Override
+            public String getDescription() {
+                return "wait for a specific view with id <" + viewId + "> during " + millis + " millis.";
+            }
+
+            @Override
+            public void perform(final UiController uiController, final View view) {
+                uiController.loopMainThreadUntilIdle();
+                final long startTime = System.currentTimeMillis();
+                final long endTime = startTime + millis;
+                final Matcher<View> viewMatcher = withId(viewId);
+
+                do {
+                    for (View child : TreeIterables.breadthFirstViewTraversal(view)) {
+                        if (viewMatcher.matches(child)) {
+                            return;
+                        }
+                    }
+                    uiController.loopMainThreadForAtLeast(50);
+                }
+                while (System.currentTimeMillis() < endTime);
+
+                throw new PerformException.Builder()
+                        .withActionDescription(this.getDescription())
+                        .withViewDescription(HumanReadables.describe(view))
+                        .withCause(new TimeoutException())
+                        .build();
+            }
+        };
+    }
+
+    public static ViewAction waitForElement(final Matcher matcher, final long millis) {
+        return new ViewAction() {
+            @Override
+            public Matcher<View> getConstraints() {
+                return isRoot();
+            }
+
+            @Override
+            public String getDescription() {
+                return "wait for a specific view with attribute <" + matcher + "> during " + millis + " millis.";
+            }
+
+            @Override
+            public void perform(final UiController uiController, final View view) {
+                uiController.loopMainThreadUntilIdle();
+                final long startTime = System.currentTimeMillis();
+                final long endTime = startTime + millis;
+                final Matcher<View> viewMatcher = matcher;
+
+                do {
+                    for (View child : TreeIterables.breadthFirstViewTraversal(view)) {
+                        try {
+                            if (viewMatcher.matches(child)) {
+                                return;
+                            }
+                        } catch (NoMatchingViewException e) {
+                        }
+                        uiController.loopMainThreadForAtLeast(50);
+                    }
+                }
+                while (System.currentTimeMillis() < endTime);
+
+                throw new PerformException.Builder()
+                        .withActionDescription(this.getDescription())
+                        .withViewDescription(HumanReadables.describe(view))
+                        .withCause(new TimeoutException())
+                        .build();
+            }
+        };
+    }
+
+    public static void elementWaiting(Matcher matcher, int millis) {
+        onView(isRoot()).perform(waitForElement(matcher, millis));
+    }
+
+    public static ViewAction waitFor(final long millis) {
+        return new ViewAction() {
+            @Override
+            public Matcher<View> getConstraints() {
+                return isRoot();
+            }
+
+            @Override
+            public String getDescription() {
+                return "Wait for " + millis + " milliseconds.";
+            }
+
+            @Override
+            public void perform(UiController uiController, final View view) {
+                uiController.loopMainThreadForAtLeast(millis);
+            }
+        };
+    }
+
+
+    public static ViewAction nestedScrollTo() {
+        return new ViewAction() {
+
+            @Override
+            public Matcher<View> getConstraints() {
+                return allOf(
+                        isDescendantOfA(isAssignableFrom(NestedScrollView.class)),
+                        withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE));
+            }
+
+            @Override
+            public String getDescription() {
+                return "View is not NestedScrollView";
+            }
+
+            @Override
+            public void perform(UiController uiController, View view) {
+                try {
+                    NestedScrollView nestedScrollView = (NestedScrollView)
+                            findFirstParentLayoutOfClass(view);
+                    if (nestedScrollView != null) {
+                        nestedScrollView.scrollTo(0, view.getTop());
+                    } else {
+                        throw new Exception("Unable to find NestedScrollView parent.");
+                    }
+                } catch (Exception e) {
+                    throw new PerformException.Builder()
+                            .withActionDescription(this.getDescription())
+                            .withViewDescription(HumanReadables.describe(view))
+                            .withCause(e)
+                            .build();
+                }
+                uiController.loopMainThreadUntilIdle();
             }
         };
     }
