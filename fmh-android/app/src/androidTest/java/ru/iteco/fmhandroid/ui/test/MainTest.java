@@ -20,9 +20,6 @@ import io.qameta.allure.android.runners.AllureAndroidJUnit4;
 import io.qameta.allure.kotlin.junit4.DisplayName;
 import ru.iteco.fmhandroid.data.screenLoad;
 import ru.iteco.fmhandroid.page.About;
-import ru.iteco.fmhandroid.page.Claim;
-import ru.iteco.fmhandroid.page.Claims;
-import ru.iteco.fmhandroid.page.CreateClaim;
 import ru.iteco.fmhandroid.page.Main;
 import ru.iteco.fmhandroid.page.News;
 import ru.iteco.fmhandroid.page.OurMission;
@@ -34,9 +31,6 @@ public class MainUnitTest {
     OurMission ourMission = new OurMission();
     Main mainScreenPage = new Main();
     News newsPage = new News();
-    Claim claimPage = new Claim();
-    Claims claimsPage = new Claims();
-    CreateClaim createClaimPage = new CreateClaim();
     About aboutPage = new About();
     screenLoad readyScreen = new screenLoad();
 
@@ -73,7 +67,6 @@ public class MainUnitTest {
         mainScreenPage.menuButton.perform(click());
         mainScreenPage.menuMain.check(matches(isDisplayed()));
         mainScreenPage.menuNews.check(matches(isDisplayed()));
-        mainScreenPage.menuClaims.check(matches(isDisplayed()));
         mainScreenPage.menuAbout.check(matches(isDisplayed()));
     }
 
@@ -101,9 +94,6 @@ public class MainUnitTest {
     public void testToMain() {
         mainScreenPage.menuButton.check(matches(isDisplayed()));
         mainScreenPage.menuButton.perform(click());
-        mainScreenPage.menuClaims.check(matches(isDisplayed()));
-        mainScreenPage.menuClaims.perform(click());
-        claimsPage.checkClaimsScreenLoaded();
         mainScreenPage.menuButton.check(matches(isDisplayed()));
         mainScreenPage.menuButton.perform(click());
         mainScreenPage.menuMain.check(matches(isDisplayed()));

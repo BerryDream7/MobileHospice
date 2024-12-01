@@ -23,8 +23,11 @@ import ru.iteco.fmhandroid.ui.AppActivity;
 @LargeTest
 @RunWith(AllureAndroidJUnit4.class)
 
-public class AuthUnitTest {
-    Auth authPage = new Auth();
+public class AuthTest {
+    private AuthPage authPage;
+    public void setUp() {
+        Auth authPage = new Auth();
+    }
     Main mainScreenPage = new Main();
     screenLoad readyScreen = new screenLoad();
 

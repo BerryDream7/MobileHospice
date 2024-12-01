@@ -42,7 +42,6 @@ public class Main{
 
     //Text menu
     public ViewInteraction menuMain = onView(withText("Main"));
-    public ViewInteraction menuClaims = onView(withText("Claims"));
     public ViewInteraction menuNews = onView(withText("News"));
     public ViewInteraction menuAbout = onView(withText("About"));
     public ViewInteraction logOut = onView(withText("Log out"));
@@ -67,55 +66,11 @@ public class Main{
                                     0),
                             4)));
 
-    // Claims
-    public ViewInteraction claims = onView(withText("Claims"));
-    public ViewInteraction claimsUnit = onView(withId(R.id.claim_list_recycler_view));
-    public ViewInteraction allClaimsButton = onView(withId(R.id.all_claims_text_view));
-    public ViewInteraction singleClaim = onView(allOf(withId(R.id.claim_list_recycler_view),
-            childAtPosition(withId(R.id.all_claims_cards_block_constraint_layout), 4)));
-    public ViewInteraction createClaimButton = onView(withId(R.id.add_new_claim_material_button));
-    public ViewInteraction unitClaimsButton = onView(
-            allOf(withId(R.id.expand_material_button),
-                    childAtPosition(
-                            withClassName(is("android.widget.LinearLayout")), childAtPosition(
-                                    withClassName(is("android.widget.LinearLayout")),
-                                    withId(R.id.container_list_claim_include_on_fragment_main),
-                                    0),
-                            3)));
-    public ViewInteraction claimList = onView(
-            allOf(withId(R.id.claim_list_recycler_view),
-                    childAtPosition(
-                            withClassName(is("android.widget.LinearLayout")),
-                            withId(R.id.all_claims_cards_block_constraint_layout),
-                            4)));
-
-    public void checkMainScreenLoaded() {
-        Allure.step("Проверка загрузки основного экраа");
-        elementWaiting(withText("News"), 10000);
-    }
-
-    public void isMainScreen() {
-        Allure.step("Проверка полей основного экраа");
-        tradeMark.check(matches(isDisplayed()));
-        news.check(matches(isDisplayed()));
-        newsUnit.check(matches(isDisplayed()));
-        claims.check(matches(isDisplayed()));
-        claimsUnit.check(matches(isDisplayed()));
-    }
-
     public void logOut() {
         Allure.step("Логаут");
         logOutButton.perform(click());
         logOut.check(matches(isDisplayed()));
         logOut.perform(click());
-    }
-
-    public void goToClaims() {
-        Allure.step("Переход в раздел заявки");
-        menuButton.check(matches(isDisplayed()));
-        menuButton.perform(click());
-        menuClaims.check(matches(isDisplayed()));
-        menuClaims.perform(click());
     }
 
     public void goToNews() {

@@ -13,8 +13,6 @@ import ru.iteco.fmhandroid.page.OurMission;
 public class screenLoad {
     Auth authPage = new Auth();
     Main mainScreenPage = new Main();
-    Claim claimPage = new Claim();
-    Claims claimsPage = new Claims();
     News newsPage = new News();
     Controlpanel controlPanelPage = new Controlpanel();
     OurMission ourMissionPage = new OurMission();
